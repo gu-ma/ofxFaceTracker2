@@ -2,6 +2,7 @@
 
 
 ofxFaceTracker2Instance::ofxFaceTracker2Instance(int label,
+                                                 int age,
                                                  dlib::full_object_detection shape,
                                                  dlib::rectangle rectangle,
                                                  ofxFaceTracker2InputInfo & info)
@@ -9,6 +10,7 @@ ofxFaceTracker2Instance::ofxFaceTracker2Instance(int label,
 , info(info)
 {
     this->label = label;
+    this->age = age;
     this->rectangle = rectangle;
     
     
@@ -40,6 +42,10 @@ ofRectangle ofxFaceTracker2Instance::getBoundingBox() const {
 
 int ofxFaceTracker2Instance::getLabel(){
     return label;
+}
+
+int ofxFaceTracker2Instance::getAge(){
+    return age;
 }
 
 ofVec2f ofxFaceTracker2Instance::transformPosePosition(ofVec3f p){
@@ -100,7 +106,6 @@ void ofxFaceTracker2Instance::calculatePoseMatrix(){
         MOUTH_CENTER_BOTTOM=66,
         MENTON=8
     };
-    
     
     // Anthropometric for male adult
     // Relative position of various facial feature relative to sellion

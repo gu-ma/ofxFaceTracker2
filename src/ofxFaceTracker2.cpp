@@ -222,13 +222,14 @@ void ofxFaceTracker2::runLandmarkDetector(){
         instances.reserve(faceRectanglesTracker.getCurrentLabels().size());
         
         for(auto label : faceRectanglesTracker.getCurrentLabels()){
+            auto age = faceRectanglesTracker.getAge(label);
             auto cvrect = faceRectanglesTracker.getCurrent(label);
             auto rect = dlib::rectangle(cvrect.x, cvrect.y, cvrect.x + cvrect.width, cvrect.y + cvrect.height);
             
             // Do the actual landmark detection
             dlib::full_object_detection shape = landmarkDetector(dlibimg, rect);
 
-            instances.push_back(ofxFaceTracker2Instance(label, shape, rect, info));
+            instances.push_back(ofxFaceTracker2Instance(label, age, shape, rect, info));
         }
         
         failed = false;
@@ -285,7 +286,7 @@ void ofxFaceTracker2::drawDebug(int x, int y, int _w, int _h) const{
             auto rect = instance.getBoundingBox();
             auto p = rect.getTopLeft();
             ofSetColor(255);
-            ofDrawBitmapStringHighlight("face "+ofToString(instance.getLabel()), p.x+4, p.y+14);
+            ofDrawBitmapStringHighlight("face "+ofToString(instance.getLabel())+" / "+ofToString(instance.getAge()) , p.x+4, p.y+14);
             
             ofPushStyle();
             ofSetColor(255,0,0);

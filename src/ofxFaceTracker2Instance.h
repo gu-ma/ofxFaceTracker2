@@ -11,12 +11,16 @@
 class ofxFaceTracker2Instance {
 public:
     ofxFaceTracker2Instance(int label,
+                            int age,
                             dlib::full_object_detection shape,
                             dlib::rectangle rectangle,
                             ofxFaceTracker2InputInfo & info);
     
     /// Returns unique label for face. Labels are persistent until face disappears
     int getLabel();
+
+    /// Returns face age.
+    int getAge();
     
     /// Transforms a 3D point in pose coordinate space to 2D point in screen space
     ofVec2f transformPosePosition(ofVec3f p);
@@ -37,7 +41,7 @@ public:
     ofxFaceTracker2Landmarks & getLandmarks();
     
 private:
-    int label;
+    int label, age;
     ofxFaceTracker2Landmarks landmarks;
     dlib::rectangle rectangle;
     

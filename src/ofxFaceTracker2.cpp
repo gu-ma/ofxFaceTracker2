@@ -58,6 +58,7 @@ void ofxFaceTracker2::setup(string dataPath) {
     
     // Setup tracker keeping persistent id's of rectangles
     faceRectanglesTracker.setMaximumDistance(200);
+    faceRectanglesTracker.setPersistence(50);
 }
 
 // ----------------
@@ -205,7 +206,6 @@ void ofxFaceTracker2::runFaceDetector(bool lockMutex){
                                  rect.height() * s));
     }
     faceRectanglesTracker.track(rects);
-    
     if(lockMutex) mutex.unlock();
 }
 
@@ -223,7 +223,8 @@ void ofxFaceTracker2::runLandmarkDetector(){
         
         for(auto label : faceRectanglesTracker.getCurrentLabels()){
             auto age = faceRectanglesTracker.getAge(label);
-            auto cvrect = faceRectanglesTracker.getCurrent(label);
+//            auto cvrect = faceRectanglesTracker.getCurrent(label);
+            auto cvrect = faceRectanglesTracker.getSmoothed(label);
             auto rect = dlib::rectangle(cvrect.x, cvrect.y, cvrect.x + cvrect.width, cvrect.y + cvrect.height);
             
             // Do the actual landmark detection
@@ -336,7 +337,7 @@ void ofxFaceTracker2::setThreaded(bool threaded){
 	this->threaded = threaded;
 }
 
-int ofxFaceTracker2::getThreadFps()const{
+int ofxFaceTracker2::getThreadFps() const{
 	return thread_fps;
 }
 
@@ -344,6 +345,14 @@ int ofxFaceTracker2::size() const {
 	return instances.size();
 }
 
+void ofxFaceTracker2::setSmoothingRate(float smoothingRate) {
+    this->smoothingRate = smoothingRate;
+    faceRectanglesTracker.setSmoothingRate(smoothingRate);
+}
+
+float ofxFaceTracker2::getSmoothingRate() {
+    return this->smoothingRate;
+}
 
 void ofxFaceTracker2::rotate_90n(cv::Mat &src, cv::Mat &dst, int angle)
 {

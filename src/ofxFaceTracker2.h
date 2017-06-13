@@ -70,13 +70,20 @@ public:
     /// Set weather the tracker should run threaded or not
     void setThreaded(bool threaded);
     
+    /// Set the tracker smoothing rate
+    void setSmoothingRate(float smoothingRate);
+
+    /// Return the tracker smoothing rate
+    float getSmoothingRate();
+    
     const vector<ofxFaceTracker2Instance> & getInstances() const;
     vector<ofxFaceTracker2Instance> & getInstances();
     
 protected:
     vector<ofxFaceTracker2Instance> instances;
     
-    ofxCv::Tracker<cv::Rect> faceRectanglesTracker;
+//    ofxCv::Tracker<cv::Rect> faceRectanglesTracker;
+    ofxCv::RectTracker faceRectanglesTracker;
     
     void runFaceDetector(bool lockMutex);
     void runLandmarkDetector();
@@ -105,6 +112,8 @@ protected:
     int landmarkDetectorImageSize;
     
     int numFaces;
+    
+    float smoothingRate;
     
     cv::Mat im, gray;
     cv::Mat threadGray;

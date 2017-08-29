@@ -79,11 +79,12 @@ public:
     const vector<ofxFaceTracker2Instance> & getInstances() const;
     vector<ofxFaceTracker2Instance> & getInstances();
     
+    ofxCv::RectTracker faceRectanglesTracker;
+    
 protected:
     vector<ofxFaceTracker2Instance> instances;
     
 //    ofxCv::Tracker<cv::Rect> faceRectanglesTracker;
-    ofxCv::RectTracker faceRectanglesTracker;
     
     void runFaceDetector(bool lockMutex);
     void runLandmarkDetector();

@@ -7,26 +7,25 @@ ofxFaceTracker2Landmarks::ofxFaceTracker2Landmarks(dlib::full_object_detection s
 
 
 
-ofVec2f ofxFaceTracker2Landmarks::getImagePoint(int i) const {
-    ofVec3f p = ofVec3f(shape.part(i).x(),
-                        shape.part(i).y(), 0);
-    p = p * info.rotationMatrix;
+glm::vec2 ofxFaceTracker2Landmarks::getImagePoint(int i) const {
+    glm::vec4 p = glm::vec4(shape.part(i).x(), shape.part(i).y(), 0.f, 1.f);
+    p = info.rotationMatrix * p;
     
-    return ofVec2f(p);
+    return glm::vec2(p.x, p.y);
 }
 
-vector<ofVec2f> ofxFaceTracker2Landmarks::getImagePoints() const {
+std::vector<glm::vec2> ofxFaceTracker2Landmarks::getImagePoints() const {
     int n = shape.num_parts();
-    vector<ofVec2f> imagePoints(n);
+    std::vector<glm::vec2> imagePoints(n);
     for(int i = 0; i < n; i++) {
         imagePoints[i] = getImagePoint(i);
     }
     return imagePoints;
 }
 
-vector<cv::Point2f> ofxFaceTracker2Landmarks::getCvImagePoints() const {
+std::vector<cv::Point2f> ofxFaceTracker2Landmarks::getCvImagePoints() const {
     int n = shape.num_parts();
-    vector<cv::Point2f> imagePoints(n);
+    std::vector<cv::Point2f> imagePoints(n);
     for(int i = 0; i < n; i++) {
         imagePoints[i] = ofxCv::toCv(getImagePoint(i));
     }
@@ -44,7 +43,7 @@ ofMesh ofxFaceTracker2Landmarks::getImageMesh() const{
 }
 
 
-vector<int> ofxFaceTracker2Landmarks::getFeatureIndices(Feature feature) {
+std::vector<int> ofxFaceTracker2Landmarks::getFeatureIndices(Feature feature) {
     switch(feature) {
         case LEFT_EYE_TOP: return consecutive(36, 40);
         case RIGHT_EYE_TOP: return consecutive(42, 46);
@@ -61,7 +60,7 @@ vector<int> ofxFaceTracker2Landmarks::getFeatureIndices(Feature feature) {
         case NOSE_BASE: return consecutive(31, 36);
         case FACE_OUTLINE: {
             static int faceOutline[] = {17,18,19,20,21,22,23,24,25,26, 16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
-            return vector<int>(faceOutline, faceOutline + 27);
+            return std::vector<int>(faceOutline, faceOutline + 27);
         }
         case ALL_FEATURES: return consecutive(0, 68);
     }
@@ -69,12 +68,12 @@ vector<int> ofxFaceTracker2Landmarks::getFeatureIndices(Feature feature) {
 
 
 template <class T>
-ofPolyline ofxFaceTracker2Landmarks::getFeature(Feature feature, vector<T> points) const {
+ofPolyline ofxFaceTracker2Landmarks::getFeature(Feature feature, std::vector<T> points) const {
     ofPolyline polyline;
-    vector<int> indices = getFeatureIndices(feature);
+    std::vector<int> indices = getFeatureIndices(feature);
     for(int i = 0; i < indices.size(); i++) {
         int cur = indices[i];
-        polyline.addVertex(points[cur]);
+        polyline.addVertex({points[cur].x, points[cur].y, 0.f});
     }
     switch(feature) {
         case LEFT_EYE:
@@ -91,9 +90,9 @@ ofPolyline ofxFaceTracker2Landmarks::getFeature(Feature feature, vector<T> point
     return polyline;
 }
 
-vector<int> ofxFaceTracker2Landmarks::consecutive(int start, int end) {
+std::vector<int> ofxFaceTracker2Landmarks::consecutive(int start, int end) {
     int n = end - start;
-    vector<int> result(n);
+    std::vector<int> result(n);
     for(int i = 0; i < n; i++) {
         result[i] = start + i;
     }
@@ -101,7 +100,7 @@ vector<int> ofxFaceTracker2Landmarks::consecutive(int start, int end) {
 }
 
 template <class T>
-ofMesh ofxFaceTracker2Landmarks::getMesh(vector<T> points) const {
+ofMesh ofxFaceTracker2Landmarks::getMesh(std::vector<T> points) const {
     cv::Rect rect(0, 0, info.inputWidth, info.inputHeight);
     cv::Subdiv2D subdiv(rect);
     
@@ -111,7 +110,7 @@ ofMesh ofxFaceTracker2Landmarks::getMesh(vector<T> points) const {
         }
     }
     
-    vector<cv::Vec6f> triangleList;
+    std::vector<cv::Vec6f> triangleList;
     subdiv.getTriangleList(triangleList);
     
     ofMesh mesh;
@@ -128,9 +127,9 @@ ofMesh ofxFaceTracker2Landmarks::getMesh(vector<T> points) const {
         // Draw rectangles completely inside the image.
         if ( rect.contains(pt1) && rect.contains(pt2) && rect.contains(pt3))
         {
-            mesh.addVertex(ofxCv::toOf(pt1));
-            mesh.addVertex(ofxCv::toOf(pt2));
-            mesh.addVertex(ofxCv::toOf(pt3));
+            mesh.addVertex({pt1.x, pt1.y, 0.f});
+            mesh.addVertex({pt2.x, pt2.y, 0.f});
+            mesh.addVertex({pt3.x, pt3.y, 0.f});
         }
     }
     return mesh;

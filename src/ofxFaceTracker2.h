@@ -95,7 +95,7 @@ protected:
     void rotate_90n(cv::Mat &src, cv::Mat &dst, int angle);
 
     bool threaded;
-    ofMutex mutex;
+    std::mutex mutex;
     bool imageDirty;
 
     dlib::frontal_face_detector faceDetector;
